@@ -1,0 +1,39 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('static',filename='styles.css') }}"
+/>
+<html>
+  <head>
+    <title>Movie Standard Name</title>
+  </head>
+  <body>
+    <h1>Movie Standard Name</h1>
+    <form id="inputForm">
+      <input type="text" id="inputText" name="input_text" />
+      <input type="button" value="Submit" onclick="getMovieStdname()" />
+    </form>
+    <div id="result"></div>
+
+    <script>
+      function getMovieStdname() {
+        var inputText = document.getElementById("inputText").value;
+
+        fetch("/result", {
+          method: "POST",
+          body: JSON.stringify({ input_text: inputText }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").innerText =
+              "Result: " + data.result;
+          });
+      }
+    </script>
+  </body>
+</html>
