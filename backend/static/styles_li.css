@@ -15,7 +15,11 @@
 }
 
 h1 {
+  font-size: 360px;
+  font-weight: bold;
+  margin-bottom: 20px;
   text-align: center;
+  color: #2e5681;
 }
 
 h2 {
