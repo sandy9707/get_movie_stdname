@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('static',filename='styles_li.css') }}"
+/>
+<html>
+  <head>
+    <title>Movie Standard Name</title>
+  </head>
+  <body>
+    <h1>Movie Standard Name</h1>
+    <form id="inputForm">
+      <input
+        type="text"
+        id="inputText"
+        name="input_text"
+        placeholder="Enter movie name"
+      />
+      <input type="button" value="Submit" onclick="getMovieStdname()" />
+    </form>
+    <div id="example">Example: La.La.Land</div>
+    <div id="result" onclick="replaceExample()"></div>
+
+    <script>
+      function getMovieStdname() {
+        var inputText = document.getElementById("inputText").value;
+
+        fetch("/calculate-movie", {
+          method: "POST",
+          body: new URLSearchParams({ input_text: inputText }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").innerText =
+              "Result for Movie: \n" + data.result;
+          });
+      }
+
+      function replaceExample() {
+        var resultContent = document
+          .getElementById("result")
+          .innerText.replace("Result: \n", "");
+        document.getElementById("inputText").value = resultContent;
+      }
+    </script>
+  </body>
+</html>

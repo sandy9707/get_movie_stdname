@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{{ url_for('static',filename='styles_li.css') }}"
+/>
+<html>
+  <head>
+    <title>TV Standard Name</title>
+  </head>
+  <body>
+    <h1>TV Standard Name</h1>
+    <form id="inputForm">
+      <input
+        type="text"
+        id="inputText"
+        name="input_text"
+        placeholder="Enter TV show name"
+      />
+      <input type="button" value="Submit" onclick="getTvStdname()" />
+    </form>
+    <div id="example">Example: What If.</div>
+    <div id="result" onclick="replaceExample()"></div>
+
+    <script>
+      function getTvStdname() {
+        var inputText = document.getElementById("inputText").value;
+
+        fetch("/calculate-tv", {
+          method: "POST",
+          body: new URLSearchParams({ input_text: inputText }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("result").innerText =
+              "Result for TV: \n" + data.result;
+          });
+      }
+
+      function replaceExample() {
+        var resultContent = document
+          .getElementById("result")
+          .innerText.replace("Result: \n", "");
+        document.getElementById("inputText").value = resultContent;
+      }
+    </script>
+  </body>
+</html>

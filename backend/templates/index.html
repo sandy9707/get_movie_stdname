@@ -1,39 +1,56 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <link
   rel="stylesheet"
   type="text/css"
-  href="{{ url_for('static',filename='styles.css') }}"
+  href="{{ url_for('static', filename='styles.css') }}"
 />
 <html>
   <head>
-    <title>Movie Standard Name</title>
+    <title>Movie and TV Search</title>
   </head>
   <body>
-    <h1>Movie Standard Name</h1>
-    <form id="inputForm">
-      <input type="text" id="inputText" name="input_text" />
-      <input type="button" value="Submit" onclick="getMovieStdname()" />
-    </form>
-    <div id="result"></div>
+    <div class="sidebar">
+      <h2>Navigation</h2>
+      <ul>
+        <li>
+          <a
+            href="{{ url_for('static', filename='movie.html') }}"
+            target="contentFrame"
+            >Movie Search</a
+          >
+        </li>
+        <li>
+          <a
+            href="{{ url_for('static', filename='tv.html') }}"
+            target="contentFrame"
+            >TV Search</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <div class="content">
+      <iframe
+        name="contentFrame"
+        style="width: 100%; height: 100vh; border: none"
+      ></iframe>
+    </div>
 
     <script>
-      function getMovieStdname() {
-        var inputText = document.getElementById("inputText").value;
+      setTimeout(function () {
+        document.getElementById("contentFrame").src =
+          "{{ url_for('static', filename='movie.html') }}";
+      }, 1000); // Delay for 1 second (1000 milliseconds)
+      // Get the iframe element
+      var iframe = document.getElementById("contentFrame");
 
-        fetch("/result", {
-          method: "POST",
-          body: JSON.stringify({ input_text: inputText }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById("result").innerText =
-              "Result: " + data.result;
-          });
-      }
+      // Get the document inside the iframe
+      var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+      // Access an element inside the iframe and change its style
+      var elementInsideIframe = iframeDoc.getElementById("elementId");
+      elementInsideIframe.style.color = "red"; // Change color to red
+      elementInsideIframe.style.fontSize = "20px"; // Change font size to 20 pixels
     </script>
   </body>
 </html>

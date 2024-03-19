@@ -30,7 +30,7 @@ def create_directory_if_not_exists(directory):
 #     data = f.read()
 #     data = data.split("\n")
 
-proxy = "10.9.65.31:7890"
+proxy = "10.9.65.32:7890"
 proxies = {
     "http": "http://%(proxy)s/" % {"proxy": proxy},
     "https": "http://%(proxy)s/" % {"proxy": proxy},
@@ -60,6 +60,24 @@ def get_combined_title(query, language, api_key):
     chinese_title = get_highest_revenue_films(query, "zh-CN", api_key)[0]
     return f"{chinese_title.replace(' ', '.')}.{title.replace(' ', '.')}.{release_date.split('-')[0]}"
 
+
+def get_highest_revenue_tvs(query, language, api_key):
+    response = requests.get(
+        url=f"https://api.themoviedb.org/3/search/tv?query={query}&api_key={api_key}&language={language}",
+        proxies=proxies,
+        headers=headers,
+    )
+    highest_revenue = response.json()  # store parsed json response
+    highest_revenue_tvs = highest_revenue["results"][0]
+    return highest_revenue_tvs["name"], highest_revenue_tvs["first_air_date"]
+
+
+def get_combined_title_tvs(query, language, api_key):
+    if "." in query:
+        query = re.sub("\.", " ", query)
+    title, release_date = get_highest_revenue_tvs(query, language, api_key)
+    chinese_title = get_highest_revenue_tvs(query, "zh-CN", api_key)[0]
+    return f"{chinese_title.replace(' ', '.')}.{title.replace(' ', '.')}.{release_date.split('-')[0]}"
 
 
 if __name__ == "__main__":
