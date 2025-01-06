@@ -1,4 +1,4 @@
-const WORKER_URL = "https://your-worker.your-subdomain.workers.dev"; // 替换为你的 Worker URL
+const WORKER_URL = "https://movie-name-worker.yeyezi.workers.dev"; // Worker URL
 const LANGUAGE = "en-US";
 
 const { createApp, ref } = Vue;

@@ -1,12 +1,7 @@
 // Cloudflare Worker code
-const TMDB_API_KEY = "YOUR_API_KEY"; // 将在 Cloudflare Workers 环境变量中设置
 const ALLOWED_ORIGINS = ["https://yeyeziblog.eu.org"]; // 替换为你的域名
 
-addEventListener("fetch", (event) => {
-  event.respondWith(handleRequest(event.request));
-});
-
-async function handleRequest(request) {
+async function handleRequest(request, env) {
   // 处理 CORS
   if (request.method === "OPTIONS") {
     return handleOptions(request);
@@ -27,9 +22,9 @@ async function handleRequest(request) {
   }
 
   // 构建 TMDB API URL
-  const tmdbUrl = `https://api.themoviedb.org/3/search/${searchType}?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(
-    query
-  )}&page=1`;
+  const tmdbUrl = `https://api.themoviedb.org/3/search/${searchType}?api_key=${
+    env.TMDB_API_KEY
+  }&language=en-US&query=${encodeURIComponent(query)}&page=1`;
 
   try {
     const response = await fetch(tmdbUrl);
@@ -70,3 +65,10 @@ function handleOptions(request) {
     },
   });
 }
+
+// Export the Worker
+export default {
+  async fetch(request, env, ctx) {
+    return handleRequest(request, env);
+  },
+};

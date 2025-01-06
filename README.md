@@ -38,14 +38,14 @@ A simple web application that helps you find the standard names of movies and TV
 6. Add your TMDB API key as a secret:
 
    ```bash
-   wrangler secret put TMDB_API_KEY
+   wrangler secret put TMDB_API_KEY --name movie-name-worker
    ```
 
 7. Update the `ALLOWED_ORIGINS` in `worker.js` with your GitHub Pages domain
 8. Deploy the Worker:
 
    ```bash
-   wrangler publish
+   wrangler deploy
    ```
 
 ### 2. Frontend Setup
