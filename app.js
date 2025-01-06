@@ -1,4 +1,5 @@
 const WORKER_URL = "https://movie-name-worker.yeyezi.workers.dev"; // Worker URL
+const LANGUAGE = "zh-CN"; // 默认使用中文
 
 const { createApp, ref } = Vue;
 
@@ -21,11 +22,16 @@ createApp({
       results.value = [];
 
       try {
-        const searchUrl = `${WORKER_URL}?type=${searchType.value}&query=${encodeURIComponent(
+        const searchUrl = `${WORKER_URL}?type=${
+          searchType.value
+        }&query=${encodeURIComponent(
           searchQuery.value
-        )}`;
+        )}&language=${LANGUAGE}`;
 
         const response = await fetch(searchUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
 
         if (data.results && data.results.length > 0) {
@@ -38,6 +44,7 @@ createApp({
           error.value = "未找到相关结果";
         }
       } catch (err) {
+        console.error("Search error:", err);
         error.value = "搜索失败，请稍后重试";
       } finally {
         loading.value = false;
