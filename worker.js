@@ -16,6 +16,7 @@ async function handleRequest(request, env) {
   const url = new URL(request.url);
   const searchType = url.searchParams.get("type");
   const query = url.searchParams.get("query");
+  const language = url.searchParams.get("language") || "zh-CN"; // 默认使用中文
 
   if (!searchType || !query) {
     return new Response("Missing parameters", { status: 400 });
@@ -24,11 +25,26 @@ async function handleRequest(request, env) {
   // 构建 TMDB API URL
   const tmdbUrl = `https://api.themoviedb.org/3/search/${searchType}?api_key=${
     env.TMDB_API_KEY
-  }&language=en-US&query=${encodeURIComponent(query)}&page=1`;
+  }&language=${language}&query=${encodeURIComponent(
+    query
+  )}&page=1&include_adult=false`;
 
   try {
     const response = await fetch(tmdbUrl);
     const data = await response.json();
+
+    // 如果中文搜索没有结果，尝试英文搜索
+    if (data.results.length === 0 && language === "zh-CN") {
+      const enResponse = await fetch(
+        `https://api.themoviedb.org/3/search/${searchType}?api_key=${
+          env.TMDB_API_KEY
+        }&language=en-US&query=${encodeURIComponent(
+          query
+        )}&page=1&include_adult=false`
+      );
+      const enData = await enResponse.json();
+      data.results = enData.results;
+    }
 
     // 设置 CORS 头
     const headers = {

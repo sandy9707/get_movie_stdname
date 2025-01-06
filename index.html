@@ -12,52 +12,69 @@
         <div class="container mx-auto px-4 py-8">
             <h1 class="text-4xl font-bold text-center text-blue-800 mb-8">Movie Name Standardizer</h1>
             
-            <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+            <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
                 <div class="mb-4">
-                    <select v-model="searchType" class="w-full p-2 border rounded-lg mb-4">
-                        <option value="movie">Movie</option>
-                        <option value="tv">TV Show</option>
-                    </select>
-                    <input 
-                        type="text" 
-                        v-model="searchQuery"
-                        @keyup.enter="search"
-                        placeholder="Enter movie/TV show name" 
-                        class="w-full p-2 border rounded-lg"
+                    <select 
+                        v-model="searchType" 
+                        class="w-full p-2 border rounded-lg mb-4 bg-gray-50"
                     >
-                </div>
-                
-                <button 
-                    @click="search" 
-                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                    Search
-                </button>
+                        <option value="movie">电影</option>
+                        <option value="tv">电视剧</option>
+                    </select>
 
-                <div v-if="loading" class="mt-4 text-center text-gray-600">
-                    Searching...
+                    <div class="flex space-x-2">
+                        <input 
+                            type="text" 
+                            v-model="searchQuery"
+                            @keyup.enter="search"
+                            placeholder="输入电影/电视剧名称" 
+                            class="flex-1 p-2 border rounded-lg"
+                        >
+                        <button 
+                            @click="search" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            :disabled="loading"
+                        >
+                            {{ loading ? '搜索中...' : '搜索' }}
+                        </button>
+                    </div>
                 </div>
 
                 <div v-if="error" class="mt-4 text-red-600 text-center">
                     {{ error }}
                 </div>
 
-                <div v-if="result" class="mt-4">
-                    <h3 class="font-semibold mb-2">Standard Name:</h3>
-                    <div 
-                        @click="copyToClipboard(result)"
-                        class="p-3 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors"
-                    >
-                        {{ result }}
+                <div v-if="results.length > 0" class="mt-4">
+                    <h3 class="font-semibold mb-2">搜索结果：</h3>
+                    <div class="space-y-2">
+                        <div 
+                            v-for="(item, index) in results" 
+                            :key="index"
+                            @click="copyToClipboard(item)"
+                            class="p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                        >
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="font-medium">{{ item.title || item.name }}</div>
+                                    <div class="text-sm text-gray-600">
+                                        {{ item.release_date || item.first_air_date }} · 
+                                        {{ item.original_title || item.original_name }}
+                                    </div>
+                                    <div class="text-xs text-gray-500 mt-1">{{ item.overview || '暂无简介' }}</div>
+                                </div>
+                                <div v-if="item.copied" class="text-green-600 text-sm ml-2">已复制!</div>
+                            </div>
+                        </div>
                     </div>
-                    <div v-if="copied" class="text-sm text-green-600 mt-2 text-center">
-                        Copied to clipboard!
-                    </div>
+                </div>
+
+                <div v-if="results.length === 0 && !loading && !error" class="mt-4 text-center text-gray-600">
+                    暂无结果
                 </div>
             </div>
 
             <div class="text-center mt-4 text-gray-600">
-                Example: La.La.Land
+                示例: La.La.Land
             </div>
         </div>
     </div>
