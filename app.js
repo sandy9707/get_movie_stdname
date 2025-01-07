@@ -22,38 +22,61 @@ createApp({
       results.value = [];
 
       try {
-        const searchUrl = `${WORKER_URL}?type=${
-          searchType.value
-        }&query=${encodeURIComponent(
-          searchQuery.value
-        )}&language=${LANGUAGE}`;
+        // 构建查询参数
+        const params = new URLSearchParams({
+          type: searchType.value,
+          query: searchQuery.value,
+          language: LANGUAGE,
+        });
 
-        const response = await fetch(searchUrl);
+        const response = await fetch(`${WORKER_URL}?${params.toString()}`, {
+          headers: {
+            Origin: "https://yeyeziblog.eu.org",
+          },
+        });
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.message || data.error);
+        }
 
         if (data.results && data.results.length > 0) {
           // 为每个结果添加 copied 标志
-          results.value = data.results.map(item => ({
+          results.value = data.results.map((item) => ({
             ...item,
-            copied: false
+            copied: false,
           }));
         } else {
           error.value = "未找到相关结果";
         }
       } catch (err) {
         console.error("Search error:", err);
-        error.value = "搜索失败，请稍后重试";
+        error.value = err.message || "搜索失败，请稍后重试";
       } finally {
         loading.value = false;
       }
     }
 
+    function formatStandardName(item) {
+      const chineseTitle = item.name || item.title;
+      const englishTitle = item.en_title || item.original_name || item.original_title;
+      const year = (item.release_date || item.first_air_date || "").split("-")[0];
+      
+      // 移除所有空格，并用点替换
+      const formattedChinese = chineseTitle.replace(/\s+/g, "");
+      const formattedEnglish = englishTitle.replace(/\s+/g, ".");
+      
+      return `${formattedChinese}.${formattedEnglish}.${year}`;
+    }
+
     async function copyToClipboard(item) {
       try {
-        const textToCopy = item.title || item.name;
+        const textToCopy = formatStandardName(item);
         await navigator.clipboard.writeText(textToCopy);
         
         // 设置复制成功标志
