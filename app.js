@@ -1,5 +1,6 @@
 const WORKER_URL = "https://movie-name-worker.yeyezi.workers.dev"; // Worker URL
 const LANGUAGE = "zh-CN"; // 默认使用中文
+const TMDB_BASE_URL = "https://www.themoviedb.org"; // TMDB 基础 URL
 
 const { createApp, ref } = Vue;
 
@@ -64,21 +65,29 @@ createApp({
 
     function formatStandardName(item) {
       const chineseTitle = item.name || item.title;
-      const englishTitle = item.en_title || item.original_name || item.original_title;
-      const year = (item.release_date || item.first_air_date || "").split("-")[0];
-      
+      const englishTitle =
+        item.en_title || item.original_name || item.original_title;
+      const year = (item.release_date || item.first_air_date || "").split(
+        "-"
+      )[0];
+
       // 移除所有空格，并用点替换
       const formattedChinese = chineseTitle.replace(/\s+/g, "");
       const formattedEnglish = englishTitle.replace(/\s+/g, ".");
-      
+
       return `${formattedChinese}.${formattedEnglish}.${year}`;
+    }
+
+    function getTMDBLink(item) {
+      const type = item.first_air_date ? "tv" : "movie";
+      return `${TMDB_BASE_URL}/${type}/${item.id}`;
     }
 
     async function copyToClipboard(item) {
       try {
         const textToCopy = formatStandardName(item);
         await navigator.clipboard.writeText(textToCopy);
-        
+
         // 设置复制成功标志
         item.copied = true;
         setTimeout(() => {
@@ -97,6 +106,7 @@ createApp({
       error,
       search,
       copyToClipboard,
+      getTMDBLink,
     };
   },
 }).mount("#app");
