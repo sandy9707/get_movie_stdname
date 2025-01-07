@@ -45,45 +45,44 @@
                 </div>
 
                 <div v-if="results.length > 0" class="mt-4 space-y-4">
-                    <h3 class="font-semibold mb-2">搜索结果：</h3>
-                    <div class="space-y-2">
-                        <div 
-                            v-for="item in results" 
-                            :key="item.id"
-                            class="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                  <div
+                    v-for="item in results"
+                    :key="item.id"
+                    @click="copyToClipboard(item)"
+                    class="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer relative"
+                  >
+                    <div class="flex justify-between items-start">
+                      <div class="flex-grow">
+                        <h3 class="text-lg font-semibold">
+                          {{ item.title || item.name }}
+                          <span class="text-gray-500 text-sm">
+                            ({{ (item.release_date || item.first_air_date || "").split("-")[0] }})
+                          </span>
+                        </h3>
+                        <p class="text-gray-600 text-sm mt-1">
+                          {{ item.original_title || item.original_name }}
+                        </p>
+                        <p class="text-gray-500 text-sm mt-2">{{ item.overview }}</p>
+                      </div>
+                      <div class="ml-4">
+                        <a
+                          :href="getTMDBLink(item)"
+                          target="_blank"
+                          class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors inline-block"
+                          @click.stop
                         >
-                            <div class="flex justify-between items-start">
-                                <div class="flex-grow">
-                                    <h3 class="text-lg font-semibold">
-                                        {{ item.title || item.name }}
-                                        <span class="text-gray-500 text-sm">
-                                            ({{ (item.release_date || item.first_air_date || "").split("-")[0] }})
-                                        </span>
-                                    </h3>
-                                    <p class="text-gray-600 text-sm mt-1">
-                                        {{ item.original_title || item.original_name }}
-                                    </p>
-                                    <p class="text-gray-500 text-sm mt-2">{{ item.overview }}</p>
-                                </div>
-                                <div class="flex flex-col gap-2 ml-4">
-                                    <button
-                                        @click="copyToClipboard(item)"
-                                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors min-w-[80px]"
-                                        :class="{ 'bg-green-500': item.copied }"
-                                    >
-                                        {{ item.copied ? "已复制" : "复制" }}
-                                    </button>
-                                    <a
-                                        :href="getTMDBLink(item)"
-                                        target="_blank"
-                                        class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-center"
-                                    >
-                                        TMDB
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                          TMDB
+                        </a>
+                      </div>
                     </div>
+                    <!-- 复制成功提示 -->
+                    <div 
+                      v-if="item.copied" 
+                      class="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-sm"
+                    >
+                      已复制!
+                    </div>
+                  </div>
                 </div>
 
                 <div v-if="results.length === 0 && !loading && !error" class="mt-4 text-center text-gray-600">
