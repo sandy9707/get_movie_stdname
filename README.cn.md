@@ -29,6 +29,19 @@ task:
 2. 批量输入输出
 3. 电视节目
 
+## 部署
+
+### pages
+
+```sh
+git branch --track gh-pages origin/gh-pages # Create new gh-pages branch; Add tracking
+git checkout --orphan gh-pages              # Initialize gh-pages without main's history
+git reset --hard                            # Remove all history
+git commit --allow-empty -m "Init"          # First commit without any files
+git checkout main                           # Go back to main (or master) branch
+git worktree add dist gh-pages # Add gh-pages as a worktree
+```
+
 ## 引用
 
 1. [Flask  使用 CSS 框架 - cltt - 博客园](https://www.cnblogs.com/tingtin/p/12778789.html)
