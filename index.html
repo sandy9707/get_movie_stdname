@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Name Standardizer</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div id="app">
+        <div class="container mx-auto px-4 py-8">
+            <h1 class="text-4xl font-bold text-center text-blue-800 mb-8">Movie Name Standardizer</h1>
+            
+            <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+                <div class="mb-4">
+                    <select 
+                        v-model="searchType" 
+                        class="w-full p-2 border rounded-lg mb-4 bg-gray-50"
+                    >
+                        <option value="movie">电影</option>
+                        <option value="tv">电视剧</option>
+                    </select>
+
+                    <div class="flex space-x-2">
+                        <input 
+                            type="text" 
+                            v-model="searchQuery"
+                            @keyup.enter="search"
+                            placeholder="输入电影/电视剧名称" 
+                            class="flex-1 p-2 border rounded-lg"
+                        >
+                        <button 
+                            @click="search" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            :disabled="loading"
+                        >
+                            {{ loading ? '搜索中...' : '搜索' }}
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="error" class="mt-4 text-red-600 text-center">
+                    {{ error }}
+                </div>
+
+                <div v-if="results.length > 0" class="mt-4 space-y-4">
+                  <div
+                    v-for="item in results"
+                    :key="item.id"
+                    @click="copyToClipboard(item)"
+                    class="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer relative"
+                  >
+                    <div class="flex justify-between items-start">
+                      <div class="flex-grow">
+                        <h3 class="text-lg font-semibold">
+                          {{ item.title || item.name }}
+                          <span class="text-gray-500 text-sm">
+                            ({{ (item.release_date || item.first_air_date || "").split("-")[0] }})
+                          </span>
+                        </h3>
+                        <p class="text-gray-600 text-sm mt-1">
+                          {{ item.original_title || item.original_name }}
+                        </p>
+                        <p class="text-gray-500 text-sm mt-2">{{ item.overview }}</p>
+                      </div>
+                      <div class="ml-4">
+                        <a
+                          :href="getTMDBLink(item)"
+                          target="_blank"
+                          class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors inline-block"
+                          @click.stop
+                        >
+                          TMDB
+                        </a>
+                      </div>
+                    </div>
+                    <!-- 复制成功提示 -->
+                    <div 
+                      v-if="item.copied" 
+                      class="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-sm"
+                    >
+                      已复制!
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="results.length === 0 && !loading && !error" class="mt-4 text-center text-gray-600">
+                    暂无结果
+                </div>
+            </div>
+
+            <div class="text-center mt-4 text-gray-600">
+                示例: La.La.Land
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
