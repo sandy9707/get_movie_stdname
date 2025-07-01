@@ -34,12 +34,11 @@ task:
 ### pages
 
 ```sh
-git branch --track gh-pages origin/gh-pages # Create new gh-pages branch; Add tracking
-git checkout --orphan gh-pages              # Initialize gh-pages without main's history
-git reset --hard                            # Remove all history
-git commit --allow-empty -m "Init"          # First commit without any files
-git checkout main                           # Go back to main (or master) branch
-git worktree add dist gh-pages # Add gh-pages as a worktree
+#!/usr/bin/env bash
+git checkout main
+git pull
+git subtree split --prefix frontend -b frontend
+git push origin frontend --force
 ```
 
 ## 引用
